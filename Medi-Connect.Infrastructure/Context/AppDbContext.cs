@@ -98,7 +98,11 @@ namespace Medi_Connect.Infrastructure.Context
      .HasOne(p => p.PaidBy)
      .WithMany()
      .HasForeignKey(p => p.PaidById)
-     .OnDelete(DeleteBehavior.Restrict); // ✅ Critical to avoid cascade path error
+     .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<NurseProfile>()
+    .Property(p => p.ExpectedPayment)
+    .HasPrecision(18, 2);
 
         }
 

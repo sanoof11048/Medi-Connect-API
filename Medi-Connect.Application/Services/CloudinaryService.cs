@@ -18,12 +18,16 @@ namespace Medi_Connect.Application.Services
 
         public CloudinaryService(IConfiguration configuration)
         {
-            var account = new Account(
-                configuration["CloudinarySettings:CloudName"],
-                configuration["CloudinarySettings:ApiKey"],
-                configuration["CloudinarySettings:ApiSecret"]);
+            var cloudName = Environment.GetEnvironmentVariable("CLOUDINARY_CLOUDNAME");
+            var apiKey = Environment.GetEnvironmentVariable("CLOUDINARY_APIKEY");
+            var apiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_APISECRET");
 
+            if (string.IsNullOrEmpty(cloudName) || string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
+                throw new Exception("Cloudinary credentials are not set");
+
+            var account = new Account(cloudName, apiKey, apiSecret);
             _cloudinary = new Cloudinary(account);
+
         }
 
         public async Task<string> UploadImageAsync(IFormFile file)

@@ -1,4 +1,4 @@
-using Medi_Connect.Application.Interfaces.IRepositories;
+﻿using Medi_Connect.Application.Interfaces.IRepositories;
 using Medi_Connect.Application.Interfaces.ISerives;
 using Medi_Connect.Application.Services;
 using Medi_Connect.Domain.Common;
@@ -22,7 +22,7 @@ public class Program
         DotNetEnv.Env.Load();
         builder.Configuration.AddEnvironmentVariables();
 
-        // Add services to the container.
+        // ---- Service Registrations ----
         builder.Services.AddScoped<IUserService, UserServices>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IAdminService, AdminService>();
@@ -40,7 +40,6 @@ public class Program
         builder.Services.AddScoped<IRazorpayService, RazorpayService>();
         builder.Services.AddScoped<IPaymentService, PaymentService>();
 
-
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IAdminRepository, AdminRepository>();
@@ -50,33 +49,41 @@ public class Program
         builder.Services.AddScoped<ICareTypeRateRepository, CareTypeRateRepository>();
         builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
-
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        builder.Services.Configure<RazorPayOptions>(builder.Configuration.GetSection("RazorPayOptions"));
 
-
-
-        builder.Services.AddDbContext<AppDbContext>((serviceProvider, optionsBuilder) =>
+        builder.Services.Configure<RazorPayOptions>(options =>
         {
-            optionsBuilder.UseSqlServer(
-                builder.Configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("Medi-Connect.Infrastructure"));
+            options.Key = Environment.GetEnvironmentVariable("RazorPayOptions__Key");
+            options.Secret = Environment.GetEnvironmentVariable("RazorPayOptions__Secret");
         });
 
-        builder.Services.AddControllers().AddJsonOptions(x =>
-    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+        // ---- Database Configuration ----
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+        if (string.IsNullOrEmpty(connectionString))
+            throw new Exception("Database connection string is missing.");
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(connectionString,
+                b => b.MigrationsAssembly("Medi-Connect.Infrastructure"))
+        );
+
+        // ---- JSON Options ----
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
-
-
         builder.Services.AddHttpContextAccessor();
 
-        var jwtKey = builder.Configuration["Jwt:Key"];
-        if (string.IsNullOrEmpty(jwtKey))
-            throw new Exception("JWT key not found in environment variables");
+        // ---- JWT Authentication ----
+        var jwtKey = Environment.GetEnvironmentVariable("Jwt__Key");
+        var jwtIssuer = Environment.GetEnvironmentVariable("Jwt__Issuer");
+        var jwtAudience = Environment.GetEnvironmentVariable("Jwt__Audience");
+
+        if (string.IsNullOrWhiteSpace(jwtKey))
+            throw new Exception("JWT Key is not configured");
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -87,14 +94,14 @@ public class Program
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    ValidIssuer = jwtIssuer,
+                    ValidAudience = jwtAudience,
                     ValidateLifetime = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                 };
             });
 
-
+        // ---- Swagger Setup ----
         builder.Services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "MediConnect API", Version = "v1" });
@@ -110,38 +117,36 @@ public class Program
             });
 
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
                 }
-            },
-            new string[] { }
-        }
-    });
+            });
         });
 
-
+        // ---- CORS ----
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
-                policy
-                    .WithOrigins("http://localhost:3000", "https://sanoof-medi-connect.vercel.app")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
+                policy.WithOrigins("http://localhost:3000", "https://sanoof-medi-connect.vercel.app")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
             });
         });
 
-        //builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
 
+        // ---- Application Pipeline ----
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
@@ -153,6 +158,7 @@ public class Program
         app.UseHttpsRedirection();
         app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseCors("AllowSpecificOrigin");
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
 
