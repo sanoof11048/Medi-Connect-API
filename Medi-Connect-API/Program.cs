@@ -19,6 +19,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        DotNetEnv.Env.Load();
+        builder.Configuration.AddEnvironmentVariables();
+
         // Add services to the container.
         builder.Services.AddScoped<IUserService, UserServices>();
         builder.Services.AddScoped<IAuthService, AuthService>();
@@ -71,6 +74,10 @@ public class Program
 
         builder.Services.AddHttpContextAccessor();
 
+        var jwtKey = builder.Configuration["Jwt:Key"];
+        if (string.IsNullOrEmpty(jwtKey))
+            throw new Exception("JWT key not found in environment variables");
+
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -83,37 +90,41 @@ public class Program
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     ValidateLifetime = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                 };
             });
 
+
         builder.Services.AddSwaggerGen(options =>
         {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "MediConnect API", Version = "v1" });
+
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
+                Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "Please enter a valid JWT token"
+                Description = "Enter JWT token in format: Bearer {token}"
             });
 
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
             {
+                Reference = new OpenApiReference
                 {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                    }
-                },
-                new string[] { }
                 }
-            });
+            },
+            new string[] { }
+        }
+    });
         });
+
 
         builder.Services.AddCors(options =>
         {
@@ -127,7 +138,7 @@ public class Program
             });
         });
 
-        builder.Services.AddControllers();
+        //builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
