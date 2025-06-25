@@ -1,4 +1,5 @@
-﻿using Medi_Connect.Application.Interfaces.IRepositories;
+﻿using DotNetEnv;
+using Medi_Connect.Application.Interfaces.IRepositories;
 using Medi_Connect.Application.Interfaces.ISerives;
 using Medi_Connect.Application.Services;
 using Medi_Connect.Domain.Common;
@@ -17,10 +18,11 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+        {
+            Env.Load();
+        }
         var builder = WebApplication.CreateBuilder(args);
-
-        // For local development only
-        DotNetEnv.Env.Load();
 
         builder.Configuration.AddEnvironmentVariables();
 
@@ -56,8 +58,6 @@ public class Program
         builder.Services.AddScoped<INurseRequestRepository, NurseRequestRepository>();
         builder.Services.AddScoped<ICareTypeRateRepository, CareTypeRateRepository>();
         builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-
-        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         builder.Services.Configure<RazorPayOptions>(options =>
         {
@@ -164,14 +164,19 @@ public class Program
         var app = builder.Build();
 
         // Swagger always enabled (optional)
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
 
         // Remove HTTPS redirection (Render handles HTTPS)
-        // app.UseHttpsRedirection(); <- REMOVE or comment out
+        app.UseHttpsRedirection();
 
-        // Optional: Health Check Endpoint
-        app.MapGet("/health", () => Results.Ok("API is healthy"));
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseHttpsRedirection(); // Local dev only
+        }
 
         app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseCors("AllowSpecificOrigin");

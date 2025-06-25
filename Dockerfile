@@ -19,4 +19,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/out ./
 
+EXPOSE 8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
 ENTRYPOINT ["dotnet", "Medi-Connect.API.dll"]
