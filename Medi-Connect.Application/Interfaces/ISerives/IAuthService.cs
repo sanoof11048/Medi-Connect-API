@@ -1,5 +1,5 @@
 ﻿using Medi_Connect.Domain.DTOs.Auth;
-using Medi_Connect.Domain.DTOs.UserDTO;
+using Medi_Connect.Domain.DTOs.Auth.OTP;
 using Medi_Connect.Domain.Models;
 using Medi_Connect.Domain.Models.ApiResponses;
 using System;
@@ -16,5 +16,10 @@ namespace Medi_Connect.Application.Interfaces.ISerives
         Task<ApiResponse<AuthResponseDTO>> Register(RegisterDTO userDto);
         Task<ApiResponse<AuthResponseDTO>> RefreshToken(string refreshToken);
         Task<ApiResponse<AuthResponseDTO>> GoogleLogin(string idToken);
+        Task<ApiResponse<string>> SendOTPAsync(string emailDTO);
+        Task<ApiResponse<string>> VerifyOtp(VerifyOtpDTO verifyOtpDTO);
+        Task<ApiResponse<string>> ResetPassword(ChangePasswordDTO passwordDTO);
+        Task<ApiResponse<string>> LogoutAsync(Guid userId);
+
     }
 }

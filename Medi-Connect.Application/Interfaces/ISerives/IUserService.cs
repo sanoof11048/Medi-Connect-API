@@ -1,7 +1,8 @@
-﻿using Medi_Connect.Domain.DTOs.UserDTO;
+﻿using Medi_Connect.Domain.DTOs.PatientDTO;
+using Medi_Connect.Domain.DTOs.ReportDTOs;
 using Medi_Connect.Domain.DTOs.UserDTOs;
-using Medi_Connect.Domain.Models;
 using Medi_Connect.Domain.Models.ApiResponses;
+using Medi_Connect.Domain.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,12 @@ namespace Medi_Connect.Application.Interfaces.ISerives
 {
     public interface IUserService
     {
-        Task<IEnumerable<User>> GetAllAsync();
+        Task<ApiResponse<IEnumerable<UserDTO>>> GetAllAsync();
+        Task<ApiResponse<UserDTO>> GetById(Guid id);
+        Task<ApiResponse<UserDTO>> UpdateUserAsync(UpdateUserDTO user);
         Task<ApiResponse<string>> ToggleBlockUser(Guid id);
-        Task<ApiResponse<User>> GetById(Guid id);
         Task<ApiResponse<string>> DeleteUser(Guid id);
-        //Task<NurseProfile> AddNurseProfileAsync(NurseProfileCreateDTO dto);
-        //Task<RelativeProfile> AddRelativeProfileAsync(RelativeProfileCreateDTO dto);
+        Task<PatientReportDTO> GeneratePatientReportAsync(PatientReportRequestDTO request);
+
     }
 }

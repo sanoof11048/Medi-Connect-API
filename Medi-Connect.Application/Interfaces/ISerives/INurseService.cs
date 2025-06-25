@@ -1,4 +1,6 @@
 ﻿using Medi_Connect.Application.Interfaces.IRepositories;
+using Medi_Connect.Domain.DTOs.NurseDTO;
+using Medi_Connect.Domain.DTOs.PatientDTO;
 using Medi_Connect.Domain.DTOs.UserDTOs;
 using Medi_Connect.Domain.Models;
 using Medi_Connect.Domain.Models.ApiResponses;
@@ -12,6 +14,11 @@ namespace Medi_Connect.Application.Interfaces.ISerives
 {
     public interface INurseService
     {
-        //Task<ApiResponse<string>> AddNurseProfile(CreateNurseDTO nurseProfile);
+        Task<ApiResponse<NurseProfileResponseDto>> GetNurseProfileAsync(Guid id);
+        Task<ApiResponse<IEnumerable<NurseProfileResponseDto>>> GetAllNurseProfilesAsync();
+        Task<ApiResponse<NurseProfileResponseDto>> CreateNurseProfileAsync(NurseProfileCreateDTO dto);
+        Task<ApiResponse<NurseProfileResponseDto>> UpdateNurseProfileAsync(Guid id, UpdateNurseProfileDTO dto);
+        Task<ApiResponse<string>> DeleteNurseProfileAsync(Guid id);
+        Task<ApiResponse<IEnumerable<PatientResponseDTO>>> GetPatientOfHomeNurse(Guid userId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Medi_Connect.Application.Interfaces.IRepositories;
+using Medi_Connect.Domain.Common;
 using Medi_Connect.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,7 +24,7 @@ namespace Medi_Connect.Infrastructure.Repositories
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(object id)
+        public async Task<T?> GetByIdAsync(object id)
         {
             return await _dbSet.FindAsync(id);
         }

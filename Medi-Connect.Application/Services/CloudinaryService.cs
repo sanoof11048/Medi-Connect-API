@@ -1,6 +1,5 @@
 ﻿using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
-using Medi_Connect.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Medi_Connect.Application.Interfaces.ISerives;
 
 namespace Medi_Connect.Application.Services
 {
@@ -19,9 +19,9 @@ namespace Medi_Connect.Application.Services
         public CloudinaryService(IConfiguration configuration)
         {
             var account = new Account(
-                configuration["Cloudinary:CloudName"],
-                configuration["Cloudinary:ApiKey"],
-                configuration["Cloudinary:ApiSecret"]);
+                configuration["CloudinarySettings:CloudName"],
+                configuration["CloudinarySettings:ApiKey"],
+                configuration["CloudinarySettings:ApiSecret"]);
 
             _cloudinary = new Cloudinary(account);
         }
