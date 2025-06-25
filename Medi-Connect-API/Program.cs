@@ -19,8 +19,16 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // For local development only
         DotNetEnv.Env.Load();
+
         builder.Configuration.AddEnvironmentVariables();
+
+        // Listen on port 8080 for Render
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(8080);
+        });
 
         // ---- Service Registrations ----
         builder.Services.AddScoped<IUserService, UserServices>();
@@ -137,7 +145,7 @@ public class Program
         {
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
-                policy.WithOrigins("http://localhost:3000", "https://sanoof-medi-connect.vercel.app")
+                policy.WithOrigins("http://localhost:3000", "https://sanoof-mediconnect.vercel.app/")
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials();
@@ -149,13 +157,16 @@ public class Program
         // ---- Application Pipeline ----
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        // Swagger always enabled (optional)
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-        app.UseHttpsRedirection();
+        // Remove HTTPS redirection (Render handles HTTPS)
+        // app.UseHttpsRedirection(); <- REMOVE or comment out
+
+        // Optional: Health Check Endpoint
+        app.MapGet("/health", () => Results.Ok("API is healthy"));
+
         app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseCors("AllowSpecificOrigin");
         app.UseAuthentication();
