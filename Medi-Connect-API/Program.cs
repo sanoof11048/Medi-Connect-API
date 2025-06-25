@@ -72,9 +72,15 @@ public class Program
             throw new Exception("Database connection string is missing.");
 
         builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(connectionString,
-                b => b.MigrationsAssembly("Medi-Connect.Infrastructure"))
+        options.UseSqlServer(connectionString, sqlOptions =>
+        {
+            sqlOptions.MigrationsAssembly("Medi-Connect.Infrastructure");
+            sqlOptions.EnableRetryOnFailure();
+        })
         );
+
+
+
 
         // ---- JSON Options ----
         builder.Services.AddControllers().AddJsonOptions(options =>
