@@ -32,6 +32,9 @@ public class Program
             options.ListenAnyIP(8080);
         });
 
+        builder.Services.AddAutoMapper(typeof(Program));
+
+
         // ---- Service Registrations ----
         builder.Services.AddScoped<IUserService, UserServices>();
         builder.Services.AddScoped<IAuthService, AuthService>();
@@ -164,7 +167,7 @@ public class Program
         var app = builder.Build();
 
         // Swagger always enabled (optional)
-        if (app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
