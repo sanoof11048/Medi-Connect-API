@@ -155,14 +155,16 @@ public class Program
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
                 policy.SetIsOriginAllowed(origin =>
-                origin == "https://sanoof-mediconnect.vercel.app" ||
-                origin == "http://localhost:3000" ||
-                origin == "https://sanoof-medi-connect.vercel.app")
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
+                    origin == "https://sanoof-mediconnect.vercel.app" ||
+                    origin == "http://localhost:3000" ||
+                    origin == "https://sanoof-medi-connect.vercel.app")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .WithExposedHeaders("Content-Disposition"); // if returning file, optional
             });
         });
+
 
         builder.Services.AddEndpointsApiExplorer();
 
