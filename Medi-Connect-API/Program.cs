@@ -155,16 +155,14 @@ public class Program
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
                 policy.SetIsOriginAllowed(origin =>
-                    origin == "https://sanoof-mediconnect.vercel.app" ||
-                    origin == "http://localhost:3000" ||
-                    origin == "https://sanoof-medi-connect.vercel.app")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials()
-                    .WithExposedHeaders("Content-Disposition"); // if returning file, optional
+                origin == "https://sanoof-mediconnect.vercel.app" ||
+                origin == "http://localhost:3000" ||
+                origin == "https://sanoof-medi-connect.vercel.app")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
             });
         });
-
 
         builder.Services.AddEndpointsApiExplorer();
 
@@ -181,10 +179,10 @@ public class Program
         // Remove HTTPS redirection (Render handles HTTPS)
         app.UseHttpsRedirection();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseHttpsRedirection(); // Local dev only
-        }
+        //if (app.Environment.IsDevelopment())
+        //{
+        //    app.UseHttpsRedirection(); // Local dev only
+        //}
 
         app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseCors("AllowSpecificOrigin");
