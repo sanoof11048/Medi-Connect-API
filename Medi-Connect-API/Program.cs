@@ -154,13 +154,7 @@ public class Program
         {
             options.AddPolicy("AllowSpecificOrigin", policy =>
             {
-                policy.SetIsOriginAllowed(origin =>
-                origin == "https://sanoof-mediconnect.vercel.app" ||
-                origin == "http://localhost:3000" ||
-                origin == "https://sanoof-medi-connect.vercel.app")
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
+                policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
             });
         });
 
@@ -184,8 +178,8 @@ public class Program
             app.UseHttpsRedirection(); // Local dev only
         }
 
-        app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseCors("AllowSpecificOrigin");
+        app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
