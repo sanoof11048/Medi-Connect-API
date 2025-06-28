@@ -155,7 +155,7 @@ public class Program
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("https://sanoof-mediconnect.vercel.app", "http://localhost:3000") 
+                policy.WithOrigins("https://sanoof-mediconnect.vercel.app", "http://localhost:3000")
                       .AllowAnyHeader()
                       .AllowAnyMethod();
             });
