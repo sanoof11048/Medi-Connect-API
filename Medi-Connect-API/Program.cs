@@ -177,12 +177,12 @@ public class Program
         }
 
         // Remove HTTPS redirection (Render handles HTTPS)
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
 
-        //if (app.Environment.IsDevelopment())
-        //{
-        //    app.UseHttpsRedirection(); // Local dev only
-        //}
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseHttpsRedirection(); // Local dev only
+        }
 
         app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseCors("AllowSpecificOrigin");
