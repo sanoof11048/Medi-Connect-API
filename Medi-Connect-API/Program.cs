@@ -153,12 +153,13 @@ public class Program
         // ---- CORS ----
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigin", policy =>
+            options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                policy.WithOrigins("https://sanoof-mediconnect.vercel.app") // replace with your actual Vercel URL
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
             });
         });
-
         builder.Services.AddEndpointsApiExplorer();
 
         // ---- Application Pipeline ----
@@ -179,7 +180,7 @@ public class Program
             app.UseHttpsRedirection(); // Local dev only
         }
 
-        app.UseCors("AllowSpecificOrigin");
+        app.UseCors("AllowFrontend");
         app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseAuthentication();
         app.UseAuthorization();
