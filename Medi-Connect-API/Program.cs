@@ -1,6 +1,7 @@
 ﻿using DotNetEnv;
 using Medi_Connect.Application.Interfaces.IRepositories;
 using Medi_Connect.Application.Interfaces.ISerives;
+using Medi_Connect.Application.Mapper;
 using Medi_Connect.Application.Services;
 using Medi_Connect.Domain.Common;
 using Medi_Connect.Infrastructure.Context;
@@ -32,7 +33,7 @@ public class Program
             options.ListenAnyIP(8080);
         });
 
-        builder.Services.AddAutoMapper(typeof(Program));
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 
         // ---- Service Registrations ----
