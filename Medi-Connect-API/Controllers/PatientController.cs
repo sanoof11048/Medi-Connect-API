@@ -4,6 +4,7 @@ using Medi_Connect.Domain.Models.ApiResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Medi_Connect.API.Controllers
@@ -41,13 +42,15 @@ namespace Medi_Connect.API.Controllers
         [Authorize(Roles ="Relative, Admin")]
         public async Task<IActionResult> CreatePatient([FromForm] CreatePatientDTO dto)
         {
-            if (HttpContext.Items["UserId"] is Guid chiefId)
+            var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (Guid.TryParse(userId, out Guid chiefId))
             {
                 var response = await _patientService.CreatePatientAsync(dto, chiefId);
                 return StatusCode(response.StatusCode, response);
             }
 
             return Unauthorized("User not authenticated.");
+
         }
 
         [HttpPut]

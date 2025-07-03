@@ -24,7 +24,7 @@ namespace Medi_Connect.Domain.Models.Users
         public string? PhotoUrl { get; set; }
         public string? Address { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public UserRole Role { get; set; }
+        public UserRole Role { get; set; } = UserRole.Relative;
         public bool IsActive { get; set; } = true;
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
