@@ -151,29 +151,32 @@ public class Program
         });
 
         // ---- CORS ----
+
+        var origins = Environment.GetEnvironmentVariable("FRONTEND_URL")?.Split(',') ?? Array.Empty<string>();
+
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("https://sanoof-mediconnect.vercel.app", "http://localhost:3000")
+                policy.WithOrigins(origins)
                       .AllowAnyHeader()
                       .AllowAnyMethod();
             });
         });
         builder.Services.AddEndpointsApiExplorer();
 
+
         // ---- Application Pipeline ----
         var app = builder.Build();
 
-        // Swagger always enabled (optional)
-        if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+        using (var scope = app.Services.CreateScope())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Database.Migrate();
         }
 
-        // Remove HTTPS redirection (Render handles HTTPS)
-        //app.UseHttpsRedirection();
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
         if (app.Environment.IsDevelopment())
         {
