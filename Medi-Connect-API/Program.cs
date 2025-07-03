@@ -160,7 +160,8 @@ public class Program
             {
                 policy.WithOrigins(origins)
                       .AllowAnyHeader()
-                      .AllowAnyMethod();
+                      .AllowAnyMethod()
+                      .AllowCredentials();
             });
         });
         builder.Services.AddEndpointsApiExplorer();
@@ -183,6 +184,7 @@ public class Program
             app.UseHttpsRedirection(); // Local dev only
         }
 
+        app.UseRouting();
         app.UseCors("AllowFrontend");
         app.UseMiddleware<GetUserIdMiddleWare>();
         app.UseAuthentication();
