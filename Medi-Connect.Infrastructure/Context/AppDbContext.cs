@@ -71,9 +71,6 @@ namespace Medi_Connect.Infrastructure.Context
                 .HasForeignKey<NurseAssignment>(na => na.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-
-
             modelBuilder.Entity<NurseAssignment>()
                 .HasOne(na => na.Nurse)
                 .WithMany()

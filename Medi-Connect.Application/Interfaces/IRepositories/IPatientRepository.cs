@@ -22,5 +22,7 @@ namespace Medi_Connect.Application.Interfaces.IRepositories
         Task<IEnumerable<Vital>> GetVitalsByPatientIdAsync(Guid id);
         Task<IEnumerable<FoodLog>> GetFoodLogsByPatientIdAsync(Guid patientId);
         Task<IEnumerable<MedicationLog>> GetMedicationLogsByPatientIdAsync(Guid patientId);
+        Task<IEnumerable<Patient>> GetPatientReports(int fromAge, int toAge, CareServiceType servicetype, string name);
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Medi_Connect.Application.Interfaces.ISerives;
 using Medi_Connect.Domain.DTOs.PatientDTO;
 using Medi_Connect.Domain.Models.ApiResponses;
+using Medi_Connect.Domain.Models.PatientDetails;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -72,6 +73,13 @@ namespace Medi_Connect.API.Controllers
         {
             var response = await _patientService.DeleteAsync(id);
             return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetReport(int fromAge, int toAge, CareServiceType servicetype, string name)
+        {
+            var res = await _patientService.GetReport(fromAge, toAge, servicetype, name);
+            return StatusCode(res.StatusCode, res);
         }
     }
 }

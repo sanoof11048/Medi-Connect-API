@@ -119,5 +119,19 @@ namespace Medi_Connect.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Patient>> GetPatientReports(int fromAge, int toAge, CareServiceType servicetype, string name)
+        {
+            if(toAge == 0)
+            {
+                toAge = 200;
+            }
+            var patients = await _context.Patients
+                .Where(a => 
+                    (a.Age >= fromAge && a.Age <= toAge) && 
+                    (a.ServiceType == servicetype || servicetype == null) &&
+                    (a.FullName == name || name == null))
+                .ToListAsync();
+            return patients;
+        }
     }
 }

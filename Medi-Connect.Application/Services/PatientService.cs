@@ -3,6 +3,7 @@ using CloudinaryDotNet;
 using Medi_Connect.Application.Interfaces.IRepositories;
 using Medi_Connect.Application.Interfaces.ISerives;
 using Medi_Connect.Domain.DTOs.PatientDTO;
+using Medi_Connect.Domain.DTOs.ReportDTOs;
 using Medi_Connect.Domain.Models;
 using Medi_Connect.Domain.Models.ApiResponses;
 using Medi_Connect.Domain.Models.PatientDetails;
@@ -122,5 +123,20 @@ namespace Medi_Connect.Application.Services
             var dto = _mapper.Map<PatientResponseDTO>(existing);
             return new ApiResponse<PatientResponseDTO>(200, "Patient updated", dto);
         }
+
+        public async Task<ApiResponse<IEnumerable<PatientReportDTO>>> GetReport(int fromAge, int toAge, CareServiceType servicetype, string name)
+        {
+            try
+            {
+
+                var patient = await _repository.GetPatientReports(fromAge,  toAge, servicetype, name);
+                var patients = _mapper.Map<IEnumerable<PatientReportDTO>>(patient);
+                return new ApiResponse<IEnumerable<PatientReportDTO>>(200, " ", patients, null);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<IEnumerable<PatientReportDTO>>(500, ex.Message, null, "Something Went Wrong" );
+            }
+        } 
     }
 }
