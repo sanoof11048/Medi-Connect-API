@@ -54,6 +54,7 @@ namespace Medi_Connect.Domain.Models.PatientDetails
 
     public enum CareServiceType
     {
+
         [Display(Name = "Neurological Care")]
         NeurologicalCare,
 
@@ -73,7 +74,8 @@ namespace Medi_Connect.Domain.Models.PatientDetails
         TracheostomyCare,
 
         [Display(Name = "Home Physio Therapy")]
-        HomePhysioTherapy
+        HomePhysioTherapy,
+
     }
 
 

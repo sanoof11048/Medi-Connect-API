@@ -18,7 +18,7 @@ namespace Medi_Connect.Application.Interfaces.ISerives
         Task<ApiResponse<PatientResponseDTO>> CreatePatientAsync(CreatePatientDTO dto, Guid relativeId);
         Task<ApiResponse<PatientResponseDTO>> UpdatePatientAsync(UpdatePatientDTO dto, Guid relativeId);
         Task<ApiResponse<bool>> DeleteAsync(Guid id);
-        Task<ApiResponse<IEnumerable<PatientReportDTO>>> GetReport(int fromAge, int toAge, CareServiceType servicetype, string name);
+        Task<ApiResponse<IEnumerable<PatientResponseDTO>>> GetReport(int fromAge, int toAge, CareServiceType servicetype, string name);
     }
 
 }

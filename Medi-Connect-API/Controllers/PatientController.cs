@@ -76,7 +76,7 @@ namespace Medi_Connect.API.Controllers
         }
 
         [HttpGet("getReport")]
-        public async Task<IActionResult> GetReport(int fromAge, int toAge, CareServiceType servicetype, string name)
+        public async Task<IActionResult> GetReport(int fromAge, int toAge, CareServiceType servicetype, string? name)
         {
             var res = await _patientService.GetReport(fromAge, toAge, servicetype, name);
             return StatusCode(res.StatusCode, res);
